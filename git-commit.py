@@ -35,8 +35,6 @@ def instructions(custom_instructions = None):
     custom_instructions += "Also include this custom instructions:\n"
     custom_instructions += diff_output()
 
-    pdb.set_trace()
-
     return custom_instructions
   else:
     return diff_output()
@@ -48,8 +46,6 @@ def commit_message(custom_instructions = None):
 
   with model().chat_session(SYSTEM_PROMPT) as llm:
     message = (llm.generate(instructions(custom_instructions), max_tokens=512, temp=0.5))
-
-  pdb.set_trace()
 
   return message.split('"')[1]
 
@@ -69,7 +65,6 @@ def are_you_sure(message):
       print("Confirmed!")
     elif user_input.lower() == "e":
       custom_instructions = input("Enter custom instructions: ")
-      pdb.set_trace()
       message = commit_message(custom_instructions)
       are_you_sure(message)
     elif user_input.lower() == "n":
