@@ -3,14 +3,15 @@ import subprocess
 import os
 
 SYSTEM_PROMPT = """
-    Generate a short git commit message based on the file changes in the prompt.
-    The commit message should be:
+    Pretend you are a software developer working on a project. You are about to commit your
+    changes to the project's repository. Generate a short git commit message based on the file
+    changes you can see in the prompt.
+
+    Instructions:
+    - Analyze the changes in the prompt.
     - It should be in double quotes.
-    - Analyze the changes in the prompt and generate a commit message based on the changes.
     - It should be compliant with the best practices for writing commit messages.
-    - In the present tense.
     - Concise and to the point.
-    - Descriptive of what has changed without going into too much detail.
     - It can include emojis to convey the message.
   """
 
@@ -29,11 +30,11 @@ def diff_output():
 
 def instructions(custom_instructions = None):
   if custom_instructions:
-    new_prompt = "Also include this custom instructions:\n\n"
-    new_prompt += custom_instructions
+    new_prompt = "The custom instructions from the user:\n"
+    new_prompt += custom_instructions + "\n"
     new_prompt += diff_output()
 
-    print("custom_instructions", new_prompt)
+    print("New custom instructions given:", new_prompt)
 
     return new_prompt
   return diff_output()
@@ -45,9 +46,6 @@ def commit_message(custom_instructions = None):
 
   with model().chat_session(SYSTEM_PROMPT) as llm:
     message = (llm.generate(instructions(custom_instructions), max_tokens=512, temp=0.5))
-
-
-  print("Generated commit message:", message)
 
   return message.split('"')[1]
 
@@ -74,7 +72,7 @@ def are_you_sure(message):
     elif user_input == "r":
       main()
     else:
-      print("Invalid input. Please enter 'y' or 'n' or 'r'.")
+      print("Invalid input. Please enter 'y', 'n', 'e' or 'r'.")
       are_you_sure(message)
 
 def main():
