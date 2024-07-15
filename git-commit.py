@@ -3,17 +3,14 @@ import subprocess
 import os
 
 SYSTEM_PROMPT = """
-    Pretend you are a software developer working on a project. You are about to commit your
-    changes to the project's repository. Generate a short git commit message based on the file
-    changes you can see in the prompt.
+  As a software developer, your task is to generate a concise and compliant git commit
+  message for the changes you can see in the prompt.
+  The message should be short, descriptive, and follow best practices for writing commit messages, and it
+  can include emojis to convey the message effectively.
+  You are about to commit your changes to the project's repository. Generate a short git commit message
+  based on the file changes you can see in the prompt.
+"""
 
-    Instructions:
-    - Analyze the changes in the prompt.
-    - It should be in double quotes.
-    - It should be compliant with the best practices for writing commit messages.
-    - Concise and to the point.
-    - It can include emojis to convey the message.
-  """
 
 def model():
   return GPT4All("Meta-Llama-3-8B-Instruct.Q4_0.gguf")
