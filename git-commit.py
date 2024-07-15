@@ -34,8 +34,6 @@ def instructions(custom_instructions = None):
     new_prompt += custom_instructions + "\n"
     new_prompt += diff_output()
 
-    print("New custom instructions given:", new_prompt)
-
     return new_prompt
   return diff_output()
 
