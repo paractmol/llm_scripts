@@ -74,4 +74,5 @@ def main():
   message = commit_message(None)
   are_you_sure(message)
 
-main()
+if __name__ == "__main__":
+    main()
