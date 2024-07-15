@@ -42,7 +42,11 @@ def commit_message(custom_instructions = None):
   with model().chat_session(SYSTEM_PROMPT) as llm:
     message = (llm.generate(instructions(custom_instructions), max_tokens=512, temp=0.5))
 
-  return message.split('"')[1]
+  try:
+    return message.split('"')[1]
+  except IndexError:
+    print("Error: Failed to generate a valid commit message.")
+    return None
 
 def are_you_sure(message):
   if not message:
