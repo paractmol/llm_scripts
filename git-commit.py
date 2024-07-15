@@ -6,7 +6,9 @@ import pdb
 SYSTEM_PROMPT = """
     Generate a short git commit message based on the file changes in the prompt.
     The commit message should be:
+    - It should be in double quotes.
     - Analyze the changes in the prompt and generate a commit message based on the changes.
+    - It should be compliant with the best practices for writing commit messages.
     - In the present tense.
     - Concise and to the point.
     - Descriptive of what has changed without going into too much detail.
@@ -30,7 +32,7 @@ def instructions(custom_instructions = None):
   print("custom_instructions", custom_instructions)
 
   if custom_instructions:
-    custom_instructions += "\n"
+    custom_instructions += "Also include this custom instructions:\n"
     custom_instructions += diff_output()
 
     pdb.set_trace()
@@ -42,8 +44,12 @@ def instructions(custom_instructions = None):
 def commit_message(custom_instructions = None):
   os.system('git add --intent-to-add .')
 
+  print("Generating commit message...")
+
   with model().chat_session(SYSTEM_PROMPT) as llm:
     message = (llm.generate(instructions(custom_instructions), max_tokens=512, temp=0.5))
+
+  pdb.set_trace()
 
   return message.split('"')[1]
 
