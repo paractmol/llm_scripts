@@ -1,6 +1,17 @@
 from gpt4all import GPT4All # type: ignore
 import subprocess
 import os
+import pdb
+
+SYSTEM_PROMPT = """
+    Generate a short git commit message based on the file changes in the prompt.
+    The commit message should be:
+    - Analyze the changes in the prompt and generate a commit message based on the changes.
+    - In the present tense.
+    - Concise and to the point.
+    - Descriptive of what has changed without going into too much detail.
+    - It can include emojis to convey the message.
+  """
 
 def model():
   return GPT4All("Meta-Llama-3-8B-Instruct.Q4_0.gguf")
@@ -15,22 +26,24 @@ def diff_output():
     result = run_subprocess(["git", "diff"])
   return result
 
-def system_prompt():
-  prompt =  """Generate a short git commit message based on the file changes in the prompt.
-    The commit message should be:
-    - Analyze the changes in the prompt and generate a commit message based on the changes.
-    - In the present tense.
-    - Concise and to the point.
-    - Descriptive of what has changed without going into too much detail.
-    - It can include emojis to convey the message.
-  """
-  return prompt
+def instructions(custom_instructions = None):
+  print("custom_instructions", custom_instructions)
 
-def commit_message():
+  if custom_instructions:
+    custom_instructions += "\n"
+    custom_instructions += diff_output()
+
+    pdb.set_trace()
+
+    return custom_instructions
+  else:
+    return diff_output()
+
+def commit_message(custom_instructions = None):
   os.system('git add --intent-to-add .')
 
-  with model().chat_session(system_prompt()) as llm:
-    message = (llm.generate(diff_output(), max_tokens=512, temp=0.5))
+  with model().chat_session(SYSTEM_PROMPT) as llm:
+    message = (llm.generate(instructions(custom_instructions), max_tokens=512, temp=0.5))
 
   return message.split('"')[1]
 
@@ -40,12 +53,19 @@ def are_you_sure(message):
   else:
     print(f"Commit message: {message}")
 
-    user_input = input("Do you like the commit message? ([y]es/[n]o/[r]etry): ")
+    user_input = input(
+      "Do you like the commit message? ([y]es/[n]o/[e]dit/[r]etry): "
+    )
     if user_input.lower() == "y":
       os.system('git add .')
       os.system(f'git commit -m "{message}"')
 
       print("Confirmed!")
+    elif user_input.lower() == "e":
+      custom_instructions = input("Enter custom instructions: ")
+      pdb.set_trace()
+      message = commit_message(custom_instructions)
+      are_you_sure(message)
     elif user_input.lower() == "n":
       print("Cancelled.")
     elif user_input.lower() == "r":
@@ -55,7 +75,7 @@ def are_you_sure(message):
       are_you_sure(message)
 
 def main():
-  message = commit_message()
+  message = commit_message(None)
   are_you_sure(message)
 
 main()
