@@ -1,6 +1,13 @@
 from gpt4all import GPT4All # type: ignore
 import subprocess
 import os
+import atexit
+
+def restore_staged_files():
+    os.system('git restore --staged .')
+    print("Staged changes have been restored.")
+
+atexit.register(restore_staged_files)
 
 SYSTEM_PROMPT = """
   As a software developer, your task is to generate a concise and compliant git commit
