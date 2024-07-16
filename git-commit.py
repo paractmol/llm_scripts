@@ -18,9 +18,7 @@ SYSTEM_PROMPT = """
   based on the file changes you can see in the prompt.
 """
 
-
-def model():
-  return GPT4All("Meta-Llama-3-8B-Instruct.Q4_0.gguf")
+MODEL = GPT4All("Meta-Llama-3-8B-Instruct.Q4_0.gguf")
 
 def run_subprocess(command):
   result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
@@ -46,7 +44,7 @@ def commit_message(custom_instructions = None):
 
   print("Generating commit message...")
 
-  with model().chat_session(SYSTEM_PROMPT) as llm:
+  with MODEL.chat_session(SYSTEM_PROMPT) as llm:
     message = (llm.generate(instructions(custom_instructions), max_tokens=512, temp=0.5))
 
   try:
